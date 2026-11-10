@@ -1,0 +1,86 @@
+{
+  "captured_at": "2026-11-10T15:54:17.347379+00:00",
+  "hermes": "0.17.0",
+  "scenes": [
+    {
+      "title": "GroundControl for Hermes",
+      "label": "ACTUAL PLUGIN COMMAND \u2022 no configuration changes",
+      "command": "/groundcontrol",
+      "output": "Load skill groundcontrol:operate before operating a deployment. Inspect -> confirm runtime capability -> propose one exact change -> approval -> durable operation -> verify. Read-only is the default. Never use shell to bypass an unavailable operation. Commands: /groundcontrol setup; /groundcontrol receipt <JSON>. A receipt reviews supplied evidence; it does not independently verify the server."
+    },
+    {
+      "title": "Native plugin, scoped connection",
+      "label": "ACTUAL REGISTRATION \u2022 existing Hermes runtime",
+      "command": "Register command + skill",
+      "output": {
+        "command": "/groundcontrol",
+        "skill": [
+          "groundcontrol:operate"
+        ],
+        "plugin_network_calls": 0,
+        "plugin_credentials_stored": 0
+      }
+    },
+    {
+      "title": "An agent sees its granted workloads",
+      "label": "LIVE MCP \u2022 Hermes owns OAuth and transport",
+      "command": "deployment.list \u2192 deployment.inspect",
+      "output": {
+        "granted_deployments_count": 4,
+        "selected_deployment": "GroundControl",
+        "runtime_capabilities_present": true,
+        "mutation_calls": 0
+      }
+    },
+    {
+      "title": "What did the endpoint actually prove?",
+      "label": "LIVE HEALTH \u2192 ACTUAL PLUGIN RECEIPT",
+      "command": "/groundcontrol receipt <fresh health JSON>",
+      "output": {
+        "source": "supplied health evidence, not an independent live check",
+        "health": "healthy",
+        "public_endpoint_verified": true,
+        "customer_journey_verified": false,
+        "next_step": "A successful HTTP endpoint is not proof of an authenticated customer journey."
+      }
+    },
+    {
+      "title": "Fail closed; never widen access",
+      "label": "LIVE MCP \u2022 synthetic nonexistent identifier",
+      "command": "deployment.inspect hermes-demo-nonexistent-20261110",
+      "output": {
+        "lookup_rejected": true,
+        "fallback_shell_calls": 0,
+        "mutation_calls": 0,
+        "scope_note": "This is not a cross-tenant isolation test."
+      }
+    },
+    {
+      "title": "A disconnect is not permission to retry",
+      "label": "LABELLED FIXTURE \u2022 actual receipt code, no mutation",
+      "command": "/groundcontrol receipt {\"operation\":{\"status\":\"uncertain\"}}",
+      "output": {
+        "source": "supplied operation evidence, not an independent live check",
+        "status": "uncertain",
+        "terminal": true,
+        "replay_allowed": false,
+        "action_completed": false,
+        "public_endpoint_verified": false,
+        "customer_journey_verified": false,
+        "next_step": "inspect and reconcile; do not replay"
+      }
+    },
+    {
+      "title": "Evidence you can review",
+      "label": "READ-ONLY RELEASE \u2022 write workflow not demonstrated",
+      "command": "github.com/teckedd-code2save/hermes-groundcontrol",
+      "output": {
+        "unit_tests": "11 passed",
+        "catalog_validation": "passed; security scan safe",
+        "default": "six read-only MCP tools",
+        "server": "runtime-aware capabilities; scoped grants",
+        "next": "Deliberate write setup + verified approval gates"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+name: groundcontrol
+version: "0.1.0"
+manifest_version: 1
+kind: standalone
+description: "Operate scoped GroundControl deployments through Hermes MCP with safe workflow guidance and conservative evidence receipts."
+author: "teckedd-code2save"
+requires_hermes: ">=0.17.0"
+capabilities:
+  tools: []
+  hooks: []
+  middleware: []
+  commands:
+    - groundcontrol
+  skills:
+    - operate
+requires_env: []

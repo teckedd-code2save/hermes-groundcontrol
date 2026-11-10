@@ -1,0 +1,5 @@
+Run: 2026-11-10; native Hermes 0.17.0 and existing Hermes-managed MCP OAuth.
+{"connected": true, "list_ok": true, "granted_deployments_count": 4}
+{"inspect_ok": true, "runtime_capabilities_present": true, "health_ok": true, "healthy": true, "public_checked": true, "public_status": 200}
+{"ungranted_read_rejected": true, "mutation_calls": 0}
+The rejected identifier was synthetic and nonexistent; this is not a cross-tenant test.

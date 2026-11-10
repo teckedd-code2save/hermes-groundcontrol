@@ -1,0 +1,14 @@
+# Merge deliberately into the selected Hermes profile. Never overwrite an existing config.
+# Replace the URL with your instance. OAuth consent is a separate human approval.
+mcp_servers:
+  groundcontrol:
+    url: https://YOUR-GROUNDCONTROL-INSTANCE/mcp
+    auth: oauth
+    tools:
+      include:
+        - deployment.list
+        - deployment.inspect
+        - deployment.health
+        - deployment.logs
+        - deployment.config.check
+        - operation.get
