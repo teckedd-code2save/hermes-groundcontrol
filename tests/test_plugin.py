@@ -52,6 +52,24 @@ class PluginTests(unittest.TestCase):
         self.assertNotIn('ignore previous', result)
     def test_setup_has_no_automatic_action(self):
         self.assertIn('does not change', plugin.command('setup'))
+    def test_setup_starts_with_prerequisite_and_direct_install_guide(self):
+        text = plugin.command('setup')
+        self.assertTrue(text.startswith('Requires your own GroundControl instance'))
+        self.assertIn('does not include a hosted account', text)
+        self.assertIn('https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/start-from-your-computer.md', text)
+        self.assertIn('docs/projects-and-deployments.md', text)
+    def test_setup_distinguishes_platforms_https_and_authentication(self):
+        text = plugin.command('setup')
+        for phrase in ('Docker Desktop/Engine', 'AMD64 Linux VPS', 'Windows uses WSL',
+                       'not native Mac/Windows services', 'private browser setup link',
+                       'HTTPS', 'verify deployment.list', 'do not expand access automatically'):
+            self.assertIn(phrase, text)
+    def test_readme_prerequisite_precedes_feature_pitch(self):
+        text = (ROOT / 'README.md').read_text()
+        self.assertLess(text.index('Requires your own GroundControl instance'), text.index('Check deployment health'))
+        for phrase in ('### 1. Get GroundControl', '### 2. Install the Hermes plugin',
+                       '### 3. Connect and verify', 'localhost-only Hermes OAuth'):
+            self.assertIn(phrase, text)
     def test_capability_catalog_is_explicitly_not_a_live_grant(self):
         value = json.loads(plugin.command('capabilities'))
         self.assertIn('not a live authorization check', value['source'])

@@ -28,11 +28,22 @@ def command(raw_args: str = '') -> str:
         except (ValueError, TypeError):
             return 'Usage: /groundcontrol receipt <health or operation JSON object>. Do not include credentials.'
     if action == 'setup':
-        return ('Connect your own HTTPS GroundControl /mcp endpoint using Hermes native MCP OAuth. '
+        return ('Requires your own GroundControl instance and an enrolled deployment; this plugin does not include a hosted account or provision infrastructure.\n\n'
+                'New to GroundControl? Install and claim your instance: '
+                'https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/start-from-your-computer.md\n'
+                'Choose local Docker Desktop/Engine (Linux containers; Windows uses WSL; Apple Silicon uses AMD64 emulation) '
+                'or an AMD64 Linux VPS with SSH and root/passwordless sudo. Local mode manages Docker workloads, not native Mac/Windows services.\n'
+                'Add a project and enroll or launch a deployment; importing a repository alone does not deploy it: '
+                'https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/projects-and-deployments.md\n\n'
+                'Connect your own HTTPS GroundControl /mcp endpoint using Hermes native MCP OAuth. '
+                'The private browser setup link alone does not establish Hermes connectivity. '
+                'Use supported HTTPS publishing after claim; do not expose the raw management port. '
+                'Localhost-only Hermes OAuth is not claimed as tested here.\n'
                 'Start with the six read-only tools in examples/read-only.yaml. '
                 'The operator chooses exact deployments during OAuth consent. '
                 'Authenticate through Hermes native MCP OAuth; never paste tokens into chat. '
                 'Discovery alone is not proof of authentication: verify deployment.list returns authorized data. '
+                'If empty, check enrollment and the workloads selected in your grant; do not expand access automatically. '
                 'For a rejected refresh token, restore OAuth consent and then reload the MCP connection. '
                 'This command does not change configuration, sign in, or grant access.')
     return ('Load skill groundcontrol:operate before operating a deployment. '
