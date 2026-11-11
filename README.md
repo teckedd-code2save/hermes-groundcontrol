@@ -4,9 +4,9 @@ Operate your own deployments through GroundControl's scoped MCP connection, with
 
 ## What this package adds
 
-- A native `/groundcontrol` command with setup guidance and a local JSON evidence receipt.
+- A native `/groundcontrol` command with setup guidance, the eleven-tool capability catalog and a local JSON evidence receipt.
 - A namespaced `groundcontrol:operate` skill covering capability discovery, exact approvals, idempotency, reconnecting to durable operations and honest public verification.
-- A read-only MCP configuration example. Hermes owns OAuth and transport; GroundControl owns resource grants and execution.
+- A read-only MCP configuration example and an optional full-capability profile. Hermes owns OAuth and transport; GroundControl owns resource grants and execution.
 
 This package does not automatically connect, modify configuration, enable write tools, create grants, install itself, or change your deployments. It is a workflow companion, not a second MCP implementation or autonomous SRE.
 
@@ -14,9 +14,9 @@ This package does not automatically connect, modify configuration, enable write 
 
 Requires Hermes 0.17.0 or later for the native command/skill APIs. The source is published at https://github.com/teckedd-code2save/hermes-groundcontrol. Catalog admission is pending maintainer review. Install a reviewed revision through `hermes plugins install https://github.com/teckedd-code2save/hermes-groundcontrol --no-enable`, then explicitly enable `groundcontrol` using the installed version's plugin controls. Do not substitute an unreviewed repository URL.
 
-Merge `examples/read-only.yaml` into the selected Hermes profile only after replacing its URL with your own HTTPS GroundControl endpoint. Preserve other settings. Run `hermes mcp login groundcontrol` interactively and approve only the workloads and read scopes you intend to expose. OAuth consent is a separate decision. Never put a bearer token in YAML or paste one into chat.
+Merge `examples/read-only.yaml` into the selected Hermes profile only after replacing its URL with your own HTTPS GroundControl endpoint. Preserve other settings. Complete native Hermes OAuth consent for only the intended workloads and read scopes. Verify an actual `deployment.list` call: anonymous discovery and tool registration do not prove authentication. Never put a bearer token in YAML or paste one into chat.
 
-Use `/groundcontrol setup`, then ask Hermes to load `groundcontrol:operate` and inspect the named deployment. MCP names may be normalized by Hermes; use discovered tools, not invented names.
+Use `/groundcontrol setup` and `/groundcontrol capabilities`, then ask Hermes to load `groundcontrol:operate` and inspect the named deployment. The capabilities command shows the catalog; it does not query live access. MCP names may be normalized by Hermes; use discovered tools, not invented names.
 
 The six exposed tools are deployment.list, deployment.inspect, deployment.health, deployment.logs, deployment.config.check and operation.get. GroundControl grants enforce actual access. Tool filtering is not a security sandbox for other Hermes tools.
 
@@ -26,7 +26,27 @@ The six exposed tools are deployment.list, deployment.inspect, deployment.health
 
 ## Write-enabled use
 
-The operating skill describes the complete workflow, but the default connection is read-only. Deliberately enabling mutations requires operator consent to the corresponding tools and GroundControl scope plus verified Hermes approval controls. Current Hermes supports untrusted MCP servers with write approval gates; the locally installed 0.17.0 was not found to implement that guard. Do not treat an ignored `trust` key as protection. Validate a supported Hermes release before enabling writes. GroundControl must still check exact workload, runtime capability and grant at execution.
+The operating skill describes the complete workflow, and `examples/full-capability.yaml` adds all five typed write operations to the six read tools:
+
+| Tool | Purpose and effects |
+| --- | --- |
+| `deployment.source.deploy` | Build and deploy linked source; may change application state and run migrations. |
+| `deployment.redeploy` | Recreate from a saved runtime recipe; may interrupt service. |
+| `deployment.restart` | Restart existing containers; interrupts the selected workload. |
+| `deployment.build_publish` | Build an exact commit and publish registry artifacts; consumes build resources. |
+| `deployment.release` | Promote a verified build by digest; changes the running release. |
+
+This optional file is never applied automatically. Enabling mutations requires operator consent to tools and GroundControl scopes plus verified effective Hermes approval controls. Some Hermes builds implement MCP `trust: untrusted`; the installed 0.17.0 build used in the initial acceptance run did not. A version number or ignored config key is not protection. Even supported guards can be bypassed by YOLO, approvals off, or remembered Session/Always grants. Use a fresh session, verify the effective approval state, and choose **Approve Once** for the exact workload/action. GroundControl still checks the selected workload, runtime capability and grant at execution.
+
+Runtime support is discovered per deployment. Compose, generated Compose, standalone images and static sites have different operations and recipe requirements. A source repository does not need to contain Compose. Do not invent a restart for a static site or a recreate recipe for an existing container.
+
+Every accepted write returns a durable operation ID. Keep one idempotency key for identical work and resume by operation ID after disconnects. Report `pending`, `running`, `verifying`, `failed` and `uncertain` honestly; do not replay uncertain work.
+
+## Connection recovery
+
+A rejected refresh token (`invalid_grant`) requires fresh native OAuth consent. GroundControl must return HTTP 401 for missing/invalid access tokens and HTTP 403 for insufficient scope while preserving `_meta["mcp/www_authenticate"]` for tool-level clients. An HTTP 200 tool error can leave native OAuth clients unable to initiate consent. The transport fix is covered by server tests and isolated tests of the installed Hermes OAuth client; verify that the server actually runs it before treating the connection as repaired.
+
+If Desktop's MCP reload times out and tools disappear, stop repeated calls, restore the client connection, and verify one fresh authorized read. Do not clear token files blindly or substitute stale health results. A successful handshake is not a successful authenticated tool call.
 
 ## Safety and disclosure
 
@@ -38,6 +58,6 @@ Run `python -m unittest discover -s tests -v`. For current catalog admission run
 
 ## GroundControl runtime
 
-The tested server release is `25202bc11fc09b41c6d8a88c5b22721ca0e9a38c`. It supports runtime-aware capability discovery, scoped operations, durable idempotent mutations and honest health uncertainty. Runtime support varies by deployment and recorded recipe; inspect capabilities before proposing an operation.
+The initial runtime acceptance used server `25202bc11fc09b41c6d8a88c5b22721ca0e9a38c`. It supports runtime-aware capability discovery, scoped operations, durable idempotent mutations and honest health uncertainty. Its later native OAuth recovery failure is documented above; those original successful reads are historical evidence. Runtime support varies by deployment and recorded recipe; inspect capabilities before proposing an operation.
 
 MIT. GroundControl source: https://github.com/teckedd-code2save/groundcontrol

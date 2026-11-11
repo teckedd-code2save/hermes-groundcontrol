@@ -52,6 +52,33 @@ class PluginTests(unittest.TestCase):
         self.assertNotIn('ignore previous', result)
     def test_setup_has_no_automatic_action(self):
         self.assertIn('does not change', plugin.command('setup'))
+    def test_capability_catalog_is_explicitly_not_a_live_grant(self):
+        value = json.loads(plugin.command('capabilities'))
+        self.assertIn('not a live authorization check', value['source'])
+        self.assertTrue(value['available_now'].startswith('unknown'))
+    def test_catalog_contains_exact_typed_operations(self):
+        value = json.loads(plugin.command('capabilities'))
+        self.assertEqual(set(value['write_tools']), {'deployment.source.deploy','deployment.redeploy','deployment.restart','deployment.build_publish','deployment.release'})
+        self.assertEqual(len(set(value['read_tools'] + value['write_tools'])), 11)
+        self.assertEqual(value['write_scope'], 'deployment:redeploy')
+    def test_optional_profile_matches_catalog_without_credentials(self):
+        text = (ROOT / 'examples/full-capability.yaml').read_text()
+        included = [line.strip()[2:] for line in text.splitlines() if line.strip().startswith('- ')]
+        self.assertEqual(set(included), set(plugin.READ_TOOLS + plugin.WRITE_TOOLS))
+        self.assertEqual(len(included), 11)
+        self.assertNotIn('Authorization:', text)
+        self.assertNotIn('Bearer ', text)
+        self.assertIn('YOUR-GROUNDCONTROL-INSTANCE', text)
+    def test_read_only_profile_remains_read_only(self):
+        text = (ROOT / 'examples/read-only.yaml').read_text()
+        included = [line.strip()[2:] for line in text.splitlines() if line.strip().startswith('- ')]
+        self.assertEqual(set(included), set(plugin.READ_TOOLS))
+        self.assertTrue(set(included).isdisjoint(plugin.WRITE_TOOLS))
+    def test_capability_command_warns_about_effective_approval_bypasses(self):
+        value = json.loads(plugin.command('capabilities'))
+        for term in ('Approve Once', 'YOLO', 'approvals off', 'remembered'):
+            self.assertIn(term, value['approval'])
+        self.assertIn('not applied', value['enablement'])
 
 if __name__ == '__main__':
     unittest.main()

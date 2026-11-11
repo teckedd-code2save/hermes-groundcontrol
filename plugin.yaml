@@ -1,5 +1,5 @@
 name: groundcontrol
-version: "0.1.0"
+version: "0.2.0"
 manifest_version: 1
 kind: standalone
 description: "Operate scoped GroundControl deployments through Hermes MCP with safe workflow guidance and conservative evidence receipts."

@@ -4,9 +4,21 @@ import json
 
 READ_TOOLS = ('deployment.list', 'deployment.inspect', 'deployment.health',
               'deployment.logs', 'deployment.config.check', 'operation.get')
+WRITE_TOOLS = ('deployment.source.deploy', 'deployment.redeploy', 'deployment.restart',
+               'deployment.build_publish', 'deployment.release')
 
 def command(raw_args: str = '') -> str:
     action, _, payload = raw_args.strip().partition(' ')
+    if action == 'capabilities':
+        return json.dumps({
+            'source': 'GroundControl tool catalog, not a live authorization check',
+            'read_tools': READ_TOOLS,
+            'write_tools': WRITE_TOOLS,
+            'write_scope': 'deployment:redeploy',
+            'available_now': 'unknown; inspect the selected deployment through native MCP',
+            'enablement': 'examples/full-capability.yaml is optional and is not applied by this command',
+            'approval': 'Verify effective per-call approval in the installed Hermes build; use Approve Once. YOLO, approvals off, or remembered grants can bypass prompts.',
+        }, indent=2)
     if action == 'receipt':
         try:
             value = json.loads(payload)
@@ -19,12 +31,14 @@ def command(raw_args: str = '') -> str:
         return ('Connect your own HTTPS GroundControl /mcp endpoint using Hermes native MCP OAuth. '
                 'Start with the six read-only tools in examples/read-only.yaml. '
                 'The operator chooses exact deployments during OAuth consent. '
-                'Use hermes mcp login groundcontrol for interactive consent; never paste tokens into chat. '
+                'Authenticate through Hermes native MCP OAuth; never paste tokens into chat. '
+                'Discovery alone is not proof of authentication: verify deployment.list returns authorized data. '
+                'For a rejected refresh token, restore OAuth consent and then reload the MCP connection. '
                 'This command does not change configuration, sign in, or grant access.')
     return ('Load skill groundcontrol:operate before operating a deployment. '
             'Inspect -> confirm runtime capability -> propose one exact change -> approval -> '
             'durable operation -> verify. Read-only is the default. Never use shell to bypass an unavailable operation. '
-            'Commands: /groundcontrol setup; /groundcontrol receipt <JSON>. '
+            'Commands: /groundcontrol setup; /groundcontrol capabilities; /groundcontrol receipt <JSON>. '
             'A receipt reviews supplied evidence; it does not independently verify the server.')
 
 def review_receipt(value: dict) -> dict:
@@ -59,5 +73,5 @@ def review_receipt(value: dict) -> dict:
     }
 
 def register(ctx):
-    ctx.register_command('groundcontrol', command, description='GroundControl setup, safe operating guide and evidence receipts', args_hint='[setup|receipt JSON]')
+    ctx.register_command('groundcontrol', command, description='GroundControl setup, capability catalog and evidence receipts', args_hint='[setup|capabilities|receipt JSON]')
     ctx.register_skill('operate', Path(__file__).parent / 'skills' / 'operate' / 'SKILL.md', description='Operate granted GroundControl workloads through native MCP with explicit capability checks and verified outcomes.')

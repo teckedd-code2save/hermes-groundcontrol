@@ -1,0 +1,25 @@
+# OPTIONAL: use only after deliberate operator consent, in a dedicated profile.
+# This example grants nothing and is not applied by the plugin.
+# Replace the URL; preserve existing settings. OAuth chooses exact workloads.
+# Requires a Hermes build that actually implements MCP trust: untrusted.
+# A version string alone is not proof. Verify a write call reaches approval.
+# YOLO, approvals off, and remembered Session/Always grants can bypass prompts.
+# Use a fresh session and Approve Once for each exact approved write.
+mcp_servers:
+  groundcontrol:
+    url: https://YOUR-GROUNDCONTROL-INSTANCE/mcp
+    auth: oauth
+    trust: untrusted
+    tools:
+      include:
+        - deployment.list
+        - deployment.inspect
+        - deployment.health
+        - deployment.logs
+        - deployment.config.check
+        - operation.get
+        - deployment.source.deploy
+        - deployment.redeploy
+        - deployment.restart
+        - deployment.build_publish
+        - deployment.release
