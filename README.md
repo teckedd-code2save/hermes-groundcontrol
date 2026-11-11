@@ -2,6 +2,10 @@
 
 Check deployment health, inspect running services, and perform approved releases from Hermes. GroundControl connects the agent to the workloads you choose, with runtime-aware operations and durable progress tracking.
 
+[Watch the 81-second demo](https://github.com/teckedd-code2save/hermes-groundcontrol/releases/download/v0.2.0/GroundControl-Hermes-Product-Demo.mp4): a real Hermes Desktop conversation lists four deployments, compares runtime and endpoint health, investigates deployment history, and checks configuration without exposing values. Eight actual MCP calls use five tool types. The demonstration is read-only; supported write operations are explained, not executed.
+
+![Four granted deployments in a real Hermes conversation](docs/screenshots/deployments.png)
+
 ## What this package adds
 
 - A native `/groundcontrol` command with setup guidance, the eleven-tool capability catalog and a local JSON evidence receipt.
@@ -12,7 +16,7 @@ This package does not automatically connect, modify configuration, enable write 
 
 ## Setup
 
-Requires Hermes 0.17.0 or later for the native command/skill APIs. The source is published at https://github.com/teckedd-code2save/hermes-groundcontrol. Catalog admission is pending maintainer review. Install a reviewed revision through `hermes plugins install https://github.com/teckedd-code2save/hermes-groundcontrol --no-enable`, then explicitly enable `groundcontrol` using the installed version's plugin controls. Do not substitute an unreviewed repository URL.
+Requires Hermes 0.17.0 or later for the native command/skill APIs. The source is published at https://github.com/teckedd-code2save/hermes-groundcontrol. Version 0.1.0 was accepted into the Hermes catalog; the 0.2.0 pin update requires separate maintainer review. To use the catalog-reviewed version, run `hermes plugins install groundcontrol`. For this newer source version, review its exact revision and install through `hermes plugins install https://github.com/teckedd-code2save/hermes-groundcontrol --no-enable`, then explicitly enable `groundcontrol` using the installed version's plugin controls. Do not substitute an unreviewed repository URL.
 
 Merge `examples/read-only.yaml` into the selected Hermes profile only after replacing its URL with your own HTTPS GroundControl endpoint. Preserve other settings. Complete native Hermes OAuth consent for only the intended workloads and read scopes. Verify an actual `deployment.list` call: anonymous discovery and tool registration do not prove authentication. Never put a bearer token in YAML or paste one into chat.
 
@@ -60,6 +64,6 @@ Run `python -m unittest discover -s tests -v`. For current catalog admission run
 
 ## GroundControl runtime
 
-The initial runtime acceptance used server `25202bc11fc09b41c6d8a88c5b22721ca0e9a38c`. It supports runtime-aware capability discovery, scoped operations, durable idempotent mutations and honest health uncertainty. The OAuth transport repair `e57f9bd` was deployed on 11 November 2026 with a consistent backup and rollback supervision. Fresh Hermes Desktop list, inspect and health calls succeeded afterward; the recorded demo uses a read-only grant to GroundControl alone. Runtime support varies by deployment and recorded recipe; inspect capabilities before proposing an operation.
+The initial runtime acceptance used server `25202bc11fc09b41c6d8a88c5b22721ca0e9a38c`. It supports runtime-aware capability discovery, scoped operations, durable idempotent mutations and honest health uncertainty. The OAuth transport repair `e57f9bd` was deployed on 11 November 2026 with a consistent backup and rollback supervision. The approved demo then used a read-only grant to four selected deployments and fresh native Hermes list, health, inspect, deployment logs and configuration checks. Runtime support varies by deployment and recorded recipe; inspect capabilities before proposing an operation.
 
 MIT. GroundControl source: https://github.com/teckedd-code2save/groundcontrol
