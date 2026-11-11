@@ -4,6 +4,10 @@ mcp_servers:
   groundcontrol:
     url: https://YOUR-GROUNDCONTROL-INSTANCE/mcp
     auth: oauth
+    oauth:
+      # Keep this stable after registration; choose another unused port if needed.
+      redirect_port: 8765
+      scope: deployment:read deployment:logs deployment:health operation:read offline_access
     tools:
       include:
         - deployment.list
