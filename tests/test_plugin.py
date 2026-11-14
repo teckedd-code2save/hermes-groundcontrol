@@ -118,10 +118,10 @@ class ExperimentalProfilesTests(unittest.TestCase):
         self.assertIn('scope: deployment:propose offline_access', text)
         self.assertNotIn('deployment:redeploy', text)
         self.assertIn('trust: untrusted', text)
-    def test_first_launch_profile_does_not_offer_unimplemented_updates(self):
+    def test_first_launch_profile_offers_only_reviewed_source_updates(self):
         text, tools = self.profile('experimental-first-launch.yaml')
-        self.assertEqual(set(tools), set(plugin.READ_TOOLS) | {'deployment.first_launch'})
-        self.assertTrue(set(tools).isdisjoint(plugin.WRITE_TOOLS))
+        self.assertEqual(set(tools), set(plugin.READ_TOOLS) | {'deployment.first_launch', 'deployment.source.deploy'})
+        self.assertEqual(set(tools) & set(plugin.WRITE_TOOLS), {'deployment.source.deploy'})
         self.assertIn('select only the new deployment', text)
         self.assertIn('redirect_port: 8765', text)
     def test_experimental_guidance_has_human_handoffs_and_no_action(self):

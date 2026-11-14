@@ -52,3 +52,14 @@ When a write is explicitly authorized, state exact deployment/runtime, operation
 Operation success means the operation completed, not necessarily that the public outcome works. Inspect `result` and `evidence`, then obtain fresh deployment health. Preserve `null`/unknown. A skipped public check is unverified. A redirect is not public success. Static workloads do not need a container check. An HTTP 2xx only verifies that endpoint, not login, checkout or another authenticated customer journey. Never claim autonomous Loop recovery or browser journey coverage from these primitives.
 
 Report: action and workload, operation ID, observed state, public verification result, uncertainty and next action. Do not include credentials, environment values or raw sensitive logs. `/groundcontrol receipt <JSON>` creates a conservative summary of supplied health/operation data. It does not fetch, authenticate, verify authenticity or replace fresh MCP evidence.
+
+### Candidate-only reviewed source updates
+
+When live inspection explicitly exposes source.deploy for an accepted public-source
+recipe, supply its exact new commit SHA, not a branch-only request. The server must
+retain the reviewed Compose and config versions, host, volume namespace and domain
+binding. New runtime policy needs owner review. Keep existing production untouched.
+The owner enters candidate configuration through GC, never via MCP secret values.
+Prepare domain access in GC; do not open ports or alter DNS without a concrete
+authorized action. Record first launch, then implement the chosen real feature and
+redeploy; do not prebuild the feature or pass rehearsal evidence off as the recording.

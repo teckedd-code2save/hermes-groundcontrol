@@ -42,3 +42,12 @@ Final results: 27 unit tests pass; native validation passes without warnings;
 isolated registration reports host readiness; stock installation completes without
 manifest warnings. This still does not establish live OAuth, native approval
 behavior, connection to GroundControl, or a real deployment.
+
+## Pinned remote installation
+
+The stock Hermes installer also fetched and installed candidate commit
+`71f2f795b1cd9a6fac730d220daca35ff85a6344` from the public GitHub repository
+into a fresh isolated HOME with `enable=False`. It completed without scanner
+bypass or force. This proves packaging/installability, not live OAuth or deployment.
+The next candidate adds existing `deployment.source.deploy` to the opt-in profile;
+real VM installation and rehearsal remain owner-attended steps.

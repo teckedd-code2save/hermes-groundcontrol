@@ -3,6 +3,7 @@
 # Replace the proposal profile deliberately; preserve the registered callback port.
 # Verify effective native MCP approval, no YOLO/remembered grants; use Approve Once.
 # First launch is one-time; a new idempotency key cannot authorize replay.
+# Later public-recipe source.deploy requires an exact SHA and unchanged reviewed Compose.
 mcp_servers:
   groundcontrol:
     url: https://YOUR-GROUNDCONTROL-INSTANCE/mcp
@@ -20,3 +21,4 @@ mcp_servers:
         - deployment.config.check
         - operation.get
         - deployment.first_launch
+        - deployment.source.deploy

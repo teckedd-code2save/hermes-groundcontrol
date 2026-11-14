@@ -35,7 +35,7 @@ path on the configured GroundControl origin. The operator then fetches the pinne
 Compose configuration, chooses the server and checks the actual configuration.
 
 Current initial-launch limits: public repositories, explicit loopback port mapping
-already in Compose, health endpoint, no environment provisioning, no arbitrary
+already in Compose, health endpoint, explicit owner-only encrypted runtime configuration, no arbitrary
 host mounts or host-network mode. Host builds require explicit acknowledgement:
 application runtime caps do not cap build CPU, RAM or daemon-side build duration.
 A request timeout is an uncertain outcome, not proof the build stopped.
@@ -61,6 +61,7 @@ stable. Do not silently widen scope or select unrelated deployments.
         - deployment.health
         - deployment.logs
         - deployment.first_launch
+        - deployment.source.deploy
         - operation.get
 ```
 
@@ -71,10 +72,12 @@ operation until a terminal result. Never substitute terminal/SSH for the tool.
 
 Started, uncertain or failed launches are not automatically replayable. Inspect
 and deliberately recover; a new idempotency key must not bypass the reservation.
-After success, ordinary source-deploy/redeploy/build/release are deliberately not
-enabled for this new recipe until a separately reviewed adoption/update path
-exists. Do not claim that the experimental first-launch path proves that later
-source updates are supported.
+After verified first launch, `deployment.source.deploy` can deploy a full immutable
+commit SHA while preserving the approved Compose content, runtime config versions,
+host, named volumes and domain binding. Changed Compose or configuration requires
+owner review; branch-only updates are rejected for this recipe. Ordinary redeploy,
+build/release adoption is not implied. Never use a new key to replay an unresolved
+update. Prove this path in the joint rehearsal before recording.
 
 ## Evidence boundary
 
@@ -82,3 +85,13 @@ Loopback health proves only the selected app endpoint on that server. It is not 
 public HTTPS URL. Public routing requires a separately authorized access plan;
 this flow does not change DNS or firewall rules. Record the actual app interaction
 and distinguish local tests, integration tests and live rehearsal results.
+
+## Configuration and domain handoff
+
+Use the owner configuration form for new values explicitly authorized for this
+isolated deployment. The form returns names and saved versions, not values. Do not
+copy current production credentials or data. Prepare the application domain through
+the owner review page: DNS ownership and direct routing checks are read-only, and
+DNS/firewall changes remain separate actions. Publish only the isolated app route
+after its local health passes. Control-plane HTTPS checks are not an independent
+customer browser journey. Preserve GC setup/access and SSH.
