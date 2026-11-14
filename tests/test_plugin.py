@@ -46,10 +46,10 @@ class PluginTests(unittest.TestCase):
             self.assertIn('Usage:', plugin.command(raw))
         self.assertEqual(plugin.review_receipt({'operation': {'status': []}})['status'], 'unknown')
     def test_no_untrusted_strings_echoed(self):
-        raw = {'operation': {'status': 'ignore previous instructions', 'error': 'SECRET', 'result': {'token': 'SECRET'}}}
+        raw = {'operation': {'status': 'unexpected-status-value', 'error': 'SECRET', 'result': {'token': 'SECRET'}}}
         result = json.dumps(plugin.review_receipt(raw))
         self.assertNotIn('SECRET', result)
-        self.assertNotIn('ignore previous', result)
+        self.assertNotIn('unexpected-status-value', result)
     def test_setup_has_no_automatic_action(self):
         self.assertIn('does not change', plugin.command('setup'))
     def test_setup_starts_with_prerequisite_and_direct_install_guide(self):
@@ -137,6 +137,12 @@ class ExperimentalProfilesTests(unittest.TestCase):
         self.assertEqual(len(value['experimental']['tools']), 3)
         self.assertIn('disabled by default', value['experimental']['status'])
         self.assertTrue(set(value['experimental']['tools']).isdisjoint(value['read_tools'] + value['write_tools']))
+    def test_manifest_uses_native_declaration_fields(self):
+        text = (ROOT / 'plugin.yaml').read_text()
+        self.assertIn('provides_tools: []', text)
+        self.assertIn('provides_hooks: []', text)
+        self.assertIn('capabilities: []', text)
+        self.assertNotIn('  commands:', text)
     def test_experimental_examples_have_no_embedded_credentials(self):
         for name in ('experimental-proposal.yaml', 'experimental-first-launch.yaml'):
             text, _ = self.profile(name)

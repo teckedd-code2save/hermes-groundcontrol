@@ -44,7 +44,7 @@ def command(raw_args: str = '') -> str:
                 'New to GroundControl? Install and claim your instance: '
                 'https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/start-from-your-computer.md\n'
                 'Choose local Docker Desktop/Engine (Linux containers; Windows uses WSL; Apple Silicon uses AMD64 emulation) '
-                'or an AMD64 Linux VPS with SSH and root/passwordless sudo. Local mode manages Docker workloads, not native Mac/Windows services.\n'
+                'or an AMD64 Linux VPS with SSH. See the linked installation guide and README for required host permissions. Local mode manages Docker workloads, not native Mac/Windows services.\n'
                 'Add a project and enroll or launch a deployment; importing a repository alone does not deploy it: '
                 'https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/projects-and-deployments.md\n\n'
                 'Connect your own HTTPS GroundControl /mcp endpoint using Hermes native MCP OAuth. '
