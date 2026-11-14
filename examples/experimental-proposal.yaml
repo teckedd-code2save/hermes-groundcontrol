@@ -1,0 +1,16 @@
+# EXPERIMENTAL TEST PROFILE ONLY. Not the released catalog capability.
+# Requires candidate GC with GC_AGENT_ENROLLMENT_PROPOSALS=1 and discovered tools.
+# Merge deliberately into a separate profile; this file grants nothing automatically.
+# Verify effective native MCP approval, no YOLO/remembered grants; use Approve Once.
+mcp_servers:
+  groundcontrol:
+    url: https://YOUR-GROUNDCONTROL-INSTANCE/mcp
+    auth: oauth
+    oauth:
+      redirect_port: 8765
+      scope: deployment:propose offline_access
+    trust: untrusted
+    tools:
+      include:
+        - deployment.proposal.create
+        - deployment.proposal.get

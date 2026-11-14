@@ -1,0 +1,24 @@
+# EXPERIMENTAL TEST PROFILE ONLY. Not the released catalog capability.
+# AFTER owner review/acceptance, reconnect OAuth and select only the new deployment.
+# Replace the proposal profile deliberately; preserve the registered callback port.
+# Verify effective native MCP approval, no YOLO/remembered grants; use Approve Once.
+# First launch is one-time; a new idempotency key cannot authorize replay.
+# Later public-recipe source.deploy requires an exact SHA and unchanged reviewed Compose.
+mcp_servers:
+  groundcontrol:
+    url: https://YOUR-GROUNDCONTROL-INSTANCE/mcp
+    auth: oauth
+    oauth:
+      redirect_port: 8765
+      scope: deployment:read deployment:logs deployment:health deployment:redeploy operation:read offline_access
+    trust: untrusted
+    tools:
+      include:
+        - deployment.list
+        - deployment.inspect
+        - deployment.health
+        - deployment.logs
+        - deployment.config.check
+        - operation.get
+        - deployment.first_launch
+        - deployment.source.deploy

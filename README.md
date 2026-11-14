@@ -35,23 +35,22 @@ to choose where it runs:
   image and app port; source builds and multi-service workflows use a Linux server.
 - **Your Linux VPS:** use an AMD64 server with SSH access and root or passwordless
   sudo. GroundControl has powerful host access; install only on a host you control.
-  The setup guide explains the private connection and required prerequisites.
+  The setup guide explains the temporary HTTPS handoff, explicit private mode and required prerequisites.
 
 Open the setup link, claim your instance and choose administrator credentials.
 Then [add a project and deployment](https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/projects-and-deployments.md).
 Importing a repository alone does not launch an application or enroll a running workload.
 
-The private browser setup link does not by itself complete Hermes connectivity.
+A successful browser setup link does not by itself complete Hermes connectivity.
 This plugin's documented OAuth configuration uses **your own HTTPS GroundControl
-endpoint reachable by Hermes**. After claiming the instance, configure a supported
-HTTPS domain or tunnel through GroundControl onboarding. Do not simply expose the
+endpoint reachable by Hermes**. The released remote installer offers temporary HTTPS by default; it is a setup bridge, not a durable agent endpoint. Before the rehearsal, verify a supported HTTPS domain or tunnel and the full native OAuth/MCP connection. Do not simply expose the
 raw management port. Temporary tunnel URLs are not permanent instance identities.
 Local browser access needs no domain, but this guide does not claim a tested
 localhost-only Hermes OAuth setup. See the [installation and publishing contract](https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/agent-assisted-installation.md).
 
 ### 2. Install the Hermes plugin
 
-Requires Hermes 0.17.0 or later for the native command/skill APIs. The source is published at https://github.com/teckedd-code2save/hermes-groundcontrol. Version 0.1.0 was accepted into the Hermes catalog; the 0.2.0 pin update requires separate maintainer review. To use the catalog-reviewed version, run `hermes plugins install groundcontrol`. For this newer source version, review its exact revision and install through `hermes plugins install https://github.com/teckedd-code2save/hermes-groundcontrol --no-enable`, then explicitly enable `groundcontrol` using the installed version's plugin controls. Do not substitute an unreviewed repository URL.
+Requires Hermes 0.17.0 or later for the native command/skill APIs. The source is published at https://github.com/teckedd-code2save/hermes-groundcontrol. Version 0.2.0 is accepted into the [Hermes catalog](https://github.com/NousResearch/hermes-agent/blob/main/plugin-catalog/groundcontrol.yaml), pinned to `d2905e9cdd710aaa20217e1c24a8091cdf8b9dcc`. Run `hermes plugins install groundcontrol` for that reviewed version. Repository main can be newer than the catalog pin; review its exact revision before installing through `hermes plugins install https://github.com/teckedd-code2save/hermes-groundcontrol --no-enable`, then explicitly enable `groundcontrol` using the installed version's plugin controls. Do not substitute an unreviewed repository URL.
 
 ### 3. Connect and verify
 
@@ -65,6 +64,10 @@ deployment. Explain what is verified and what remains unknown."
 Use `/groundcontrol setup` and `/groundcontrol capabilities`, then ask Hermes to load `groundcontrol:operate` and inspect the named deployment. The capabilities command shows the catalog; it does not query live access. MCP names may be normalized by Hermes; use discovered tools, not invented names.
 
 The six exposed tools are deployment.list, deployment.inspect, deployment.health, deployment.logs, deployment.config.check and operation.get. GroundControl grants enforce actual access. Tool filtering is not a security sandbox for other Hermes tools.
+
+## Deployment rehearsal
+
+The current eleven-tool contract operates **already-enrolled deployments**. It does not create projects, enroll a new workload or configure its source/secret values. A repository-to-release demonstration must disclose that operator setup, not imply Hermes performed it. Use the [live rehearsal checklist](docs/LIVE-REHEARSAL.md) before recording. The existing catalog demo proves reads only; write approval and deployment still need live acceptance.
 
 ## Evidence receipts
 
@@ -109,3 +112,13 @@ Run `python -m unittest discover -s tests -v`. For current catalog admission run
 The initial runtime acceptance used server `25202bc11fc09b41c6d8a88c5b22721ca0e9a38c`. It supports runtime-aware capability discovery, scoped operations, durable idempotent mutations and honest health uncertainty. The OAuth transport repair `e57f9bd` was deployed on 11 November 2026 with a consistent backup and rollback supervision. The approved demo then used a read-only grant to four selected deployments and fresh native Hermes list, health, inspect, deployment logs and configuration checks. Runtime support varies by deployment and recorded recipe; inspect capabilities before proposing an operation.
 
 MIT. GroundControl source: https://github.com/teckedd-code2save/groundcontrol
+
+
+### Candidate-only first-deploy testing
+
+The default remains six read-only tools. The released catalog pin is not changed by this branch.
+`/groundcontrol experimental` describes the staged, opt-in candidate flow; it performs no actions.
+Use [experimental proposal](examples/experimental-proposal.yaml) first, then only after owner acceptance
+and separate resource consent use [experimental first launch](examples/experimental-first-launch.yaml).
+See [limits and rehearsal steps](docs/EXPERIMENTAL-FIRST-DEPLOY.md). Live discovery and effective
+native approvals are required; local tests are not proof of a live deployment.

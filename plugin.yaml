@@ -5,12 +5,8 @@ kind: standalone
 description: "Operate scoped GroundControl deployments through Hermes MCP with safe workflow guidance and conservative evidence receipts."
 author: "teckedd-code2save"
 requires_hermes: ">=0.17.0"
-capabilities:
-  tools: []
-  hooks: []
-  middleware: []
-  commands:
-    - groundcontrol
-  skills:
-    - operate
+# Commands and skills are registered through the native plugin context.
+provides_tools: []
+provides_hooks: []
+capabilities: []
 requires_env: []
