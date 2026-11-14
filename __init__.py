@@ -15,10 +15,22 @@ def command(raw_args: str = '') -> str:
             'read_tools': READ_TOOLS,
             'write_tools': WRITE_TOOLS,
             'write_scope': 'deployment:redeploy',
+            'experimental': {'tools': ['deployment.proposal.create', 'deployment.proposal.get', 'deployment.first_launch'], 'status': 'candidate-only, disabled by default; not included in the released catalog profile', 'guide': '/groundcontrol experimental'},
             'available_now': 'unknown; inspect the selected deployment through native MCP',
+            'enrollment': 'Operator setup required: this catalog does not create projects, enroll deployments or configure source and secret values',
             'enablement': 'examples/full-capability.yaml is optional and is not applied by this command',
             'approval': 'Verify effective per-call approval in the installed Hermes build; use Approve Once. YOLO, approvals off, or remembered grants can bypass prompts.',
         }, indent=2)
+    if action == 'experimental':
+        return ('Experimental candidate-only repository-to-first-launch workflow. Not a claim about the released catalog plugin or your connected server.\n'
+                '1. Operator installs a tested GroundControl candidate and explicitly enables its enrollment feature; verify live tool discovery first. Never enable it silently.\n'
+                '2. Deliberately use examples/experimental-proposal.yaml in a separate Hermes profile. Native OAuth requests only deployment:propose offline_access; no existing deployment is needed.\n'
+                '3. Submit public GitHub repository, immutable SHA, Compose path and workload name through deployment.proposal.create. No secret values. Present ownerReviewPath on your configured GroundControl origin.\n'
+                '4. The owner reviews fetched pinned Compose, host, loopback mapping, health, runtime budget and build risks. Acceptance reserves a pending deployment; it does not launch or grant agent access.\n'
+                '5. With explicit operator consent, replace the profile using examples/experimental-first-launch.yaml, reconnect OAuth and select only that deployment. Inspect its approved recipe hash and first-launch capability.\n'
+                '6. Verify effective Hermes Approve Once for deployment.first_launch; use the exact approved hash and one stable idempotency key. Save operation ID and poll operation.get. Never replay started/failed/uncertain work.\n'
+                'Loopback health is not public HTTPS. Environment provisioning and ordinary source-update/adoption are not supplied by this experimental path. Builds run untrusted code; runtime caps do not bound build CPU/RAM or daemon-side build duration.\n'
+                'Missing discovered tools means stop and explain the missing candidate/configuration, not use shell or another transport. This command does not change profiles, authenticate, grant access or run deployment actions. See docs/EXPERIMENTAL-FIRST-DEPLOY.md.')
     if action == 'receipt':
         try:
             value = json.loads(payload)
@@ -36,8 +48,8 @@ def command(raw_args: str = '') -> str:
                 'Add a project and enroll or launch a deployment; importing a repository alone does not deploy it: '
                 'https://github.com/teckedd-code2save/groundcontrol/blob/main/docs/projects-and-deployments.md\n\n'
                 'Connect your own HTTPS GroundControl /mcp endpoint using Hermes native MCP OAuth. '
-                'The private browser setup link alone does not establish Hermes connectivity. '
-                'Use supported HTTPS publishing after claim; do not expose the raw management port. '
+                'A browser setup link alone does not establish Hermes connectivity. '
+                'Remote setup offers temporary HTTPS by default; verify a durable HTTPS endpoint and native OAuth/MCP before ongoing agent use. Do not expose the raw management port. '
                 'Localhost-only Hermes OAuth is not claimed as tested here.\n'
                 'Start with the six read-only tools in examples/read-only.yaml. '
                 'The operator chooses exact deployments during OAuth consent. '
@@ -49,7 +61,7 @@ def command(raw_args: str = '') -> str:
     return ('Load skill groundcontrol:operate before operating a deployment. '
             'Inspect -> confirm runtime capability -> propose one exact change -> approval -> '
             'durable operation -> verify. Read-only is the default. Never use shell to bypass an unavailable operation. '
-            'Commands: /groundcontrol setup; /groundcontrol capabilities; /groundcontrol receipt <JSON>. '
+            'Commands: /groundcontrol setup; /groundcontrol capabilities; /groundcontrol experimental; /groundcontrol receipt <JSON>. '
             'A receipt reviews supplied evidence; it does not independently verify the server.')
 
 def review_receipt(value: dict) -> dict:
@@ -84,5 +96,5 @@ def review_receipt(value: dict) -> dict:
     }
 
 def register(ctx):
-    ctx.register_command('groundcontrol', command, description='GroundControl setup, capability catalog and evidence receipts', args_hint='[setup|capabilities|receipt JSON]')
+    ctx.register_command('groundcontrol', command, description='GroundControl setup, capability catalog and evidence receipts', args_hint='[setup|capabilities|experimental|receipt JSON]')
     ctx.register_skill('operate', Path(__file__).parent / 'skills' / 'operate' / 'SKILL.md', description='Operate granted GroundControl workloads through native MCP with explicit capability checks and verified outcomes.')

@@ -61,7 +61,7 @@ class PluginTests(unittest.TestCase):
     def test_setup_distinguishes_platforms_https_and_authentication(self):
         text = plugin.command('setup')
         for phrase in ('Docker Desktop/Engine', 'AMD64 Linux VPS', 'Windows uses WSL',
-                       'not native Mac/Windows services', 'private browser setup link',
+                       'not native Mac/Windows services', 'browser setup link',
                        'HTTPS', 'verify deployment.list', 'do not expand access automatically'):
             self.assertIn(phrase, text)
     def test_readme_prerequisite_precedes_feature_pitch(self):
@@ -97,6 +97,51 @@ class PluginTests(unittest.TestCase):
         for term in ('Approve Once', 'YOLO', 'approvals off', 'remembered'):
             self.assertIn(term, value['approval'])
         self.assertIn('not applied', value['enablement'])
+
+class RehearsalBoundaryTests(unittest.TestCase):
+    def test_catalog_does_not_imply_enrollment(self):
+        value = json.loads(plugin.command('capabilities'))
+        self.assertIn('does not create projects', value['enrollment'])
+        self.assertIn('enroll deployments', value['enrollment'])
+    def test_setup_does_not_claim_temporary_is_durable(self):
+        text = plugin.command('setup')
+        self.assertIn('temporary HTTPS by default', text)
+        self.assertIn('verify a durable HTTPS endpoint', text)
+
+class ExperimentalProfilesTests(unittest.TestCase):
+    def profile(self, name):
+        text = (ROOT / 'examples' / name).read_text()
+        return text, [line.strip()[2:] for line in text.splitlines() if line.strip().startswith('- ')]
+    def test_proposal_profile_has_no_existing_workload_or_execution_scope(self):
+        text, tools = self.profile('experimental-proposal.yaml')
+        self.assertEqual(tools, ['deployment.proposal.create', 'deployment.proposal.get'])
+        self.assertIn('scope: deployment:propose offline_access', text)
+        self.assertNotIn('deployment:redeploy', text)
+        self.assertIn('trust: untrusted', text)
+    def test_first_launch_profile_does_not_offer_unimplemented_updates(self):
+        text, tools = self.profile('experimental-first-launch.yaml')
+        self.assertEqual(set(tools), set(plugin.READ_TOOLS) | {'deployment.first_launch'})
+        self.assertTrue(set(tools).isdisjoint(plugin.WRITE_TOOLS))
+        self.assertIn('select only the new deployment', text)
+        self.assertIn('redirect_port: 8765', text)
+    def test_experimental_guidance_has_human_handoffs_and_no_action(self):
+        text = plugin.command('experimental')
+        for phrase in ('candidate-only', 'verify live tool discovery', 'owner', 'does not launch or grant',
+                       'explicit operator consent', 'Approve Once', 'Never replay',
+                       'Loopback health is not public HTTPS', 'does not change profiles'):
+            self.assertIn(phrase, text)
+    def test_experimental_capability_separate_from_released_catalog(self):
+        value = json.loads(plugin.command('capabilities'))
+        self.assertEqual(len(value['read_tools']), 6)
+        self.assertEqual(len(value['write_tools']), 5)
+        self.assertEqual(len(value['experimental']['tools']), 3)
+        self.assertIn('disabled by default', value['experimental']['status'])
+        self.assertTrue(set(value['experimental']['tools']).isdisjoint(value['read_tools'] + value['write_tools']))
+    def test_experimental_examples_have_no_embedded_credentials(self):
+        for name in ('experimental-proposal.yaml', 'experimental-first-launch.yaml'):
+            text, _ = self.profile(name)
+            for secret in ('Authorization:', 'Bearer ', 'access_token:', 'client_secret:'):
+                self.assertNotIn(secret, text)
 
 if __name__ == '__main__':
     unittest.main()
